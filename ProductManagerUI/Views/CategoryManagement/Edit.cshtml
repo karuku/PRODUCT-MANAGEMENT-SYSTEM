@@ -1,0 +1,45 @@
+﻿
+@{ 
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header"><i class="fa fa-table"></i> Edit Category</h3>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="/Home/">Home</a></li>
+            <li><i class="fa fa-th-list"></i>Edit Category</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <section class="panel">
+            <header class="panel-heading">
+                Category
+            </header>
+            <div class="panel-body">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Description</label>
+                        <textarea class="form-control" id="catDesc" placeholder="Enter Description"></textarea>
+                    </div>
+               
+                    @*<div class="checkbox">
+                        <label>
+                            <input type="checkbox"> Check me out
+                        </label>
+                    </div>*@
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+        </section>
+    </div> 
+</div>

@@ -1,0 +1,678 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="PMModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AppUser">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="userName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="userPwd" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="userLevel" Type="tinyint" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MasterProductCategories">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="catDesc" Type="varchar(max)" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MasterProductTypes">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="systemTypeId" Type="tinyint" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="typeDesc" Type="varchar(max)" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MasterProductVariantAttributes">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="variantDesc" Type="varchar(max)" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MasterProductVariantSubAttributes">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="attributeId" Type="int" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="subVariantDesc" Type="varchar(max)" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="catId" Type="int" Nullable="false" />
+          <Property Name="typeId" Type="int" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="skuCode" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="stockQtty" Type="float" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductCompositeAlloc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="prodId" Type="int" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductCompositeLines">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="compId" Type="int" Nullable="false" />
+          <Property Name="prodStandId" Type="int" Nullable="false" />
+          <Property Name="isMandatory" Type="bit" Nullable="false" />
+          <Property Name="isPriceInclusive" Type="bit" Nullable="false" />
+          <Property Name="isParent" Type="bit" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductStandardAlloc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="prodId" Type="int" Nullable="false" />
+          <Property Name="price" Type="float" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductVariantAlloc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="prodId" Type="int" Nullable="false" />
+          <Property Name="subAttrId" Type="int" Nullable="false" />
+          <Property Name="price" Type="float" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes">
+          <End Role="MasterProductVariantAttributes" Type="Self.MasterProductVariantAttributes" Multiplicity="1" />
+          <End Role="MasterProductVariantSubAttributes" Type="Self.MasterProductVariantSubAttributes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductVariantAttributes">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MasterProductVariantSubAttributes">
+              <PropertyRef Name="attributeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Product_MasterProductCategories">
+          <End Role="MasterProductCategories" Type="Self.MasterProductCategories" Multiplicity="1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductCategories">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="catId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Product_MasterProductTypes">
+          <End Role="MasterProductTypes" Type="Self.MasterProductTypes" Multiplicity="1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductTypes">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="typeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductCompositeAlloc_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductCompositeAlloc" Type="Self.ProductCompositeAlloc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductCompositeAlloc">
+              <PropertyRef Name="prodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductCompositeLines_ProductCompositeAlloc">
+          <End Role="ProductCompositeAlloc" Type="Self.ProductCompositeAlloc" Multiplicity="1" />
+          <End Role="ProductCompositeLines" Type="Self.ProductCompositeLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductCompositeAlloc">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductCompositeLines">
+              <PropertyRef Name="compId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductCompositeLines_ProductStandardAlloc">
+          <End Role="ProductStandardAlloc" Type="Self.ProductStandardAlloc" Multiplicity="1" />
+          <End Role="ProductCompositeLines" Type="Self.ProductCompositeLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductStandardAlloc">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductCompositeLines">
+              <PropertyRef Name="prodStandId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductStandardAlloc_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductStandardAlloc" Type="Self.ProductStandardAlloc" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductStandardAlloc">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductVariantAlloc_MasterProductVariantSubAttributes">
+          <End Role="MasterProductVariantSubAttributes" Type="Self.MasterProductVariantSubAttributes" Multiplicity="1" />
+          <End Role="ProductVariantAlloc" Type="Self.ProductVariantAlloc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductVariantSubAttributes">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductVariantAlloc">
+              <PropertyRef Name="subAttrId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductVariantAlloc_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductVariantAlloc" Type="Self.ProductVariantAlloc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductVariantAlloc">
+              <PropertyRef Name="prodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PMModelStoreContainer">
+          <EntitySet Name="AppUser" EntityType="Self.AppUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MasterProductCategories" EntityType="Self.MasterProductCategories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MasterProductTypes" EntityType="Self.MasterProductTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MasterProductVariantAttributes" EntityType="Self.MasterProductVariantAttributes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MasterProductVariantSubAttributes" EntityType="Self.MasterProductVariantSubAttributes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductCompositeAlloc" EntityType="Self.ProductCompositeAlloc" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductCompositeLines" EntityType="Self.ProductCompositeLines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductStandardAlloc" EntityType="Self.ProductStandardAlloc" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductVariantAlloc" EntityType="Self.ProductVariantAlloc" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes" Association="Self.FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes">
+            <End Role="MasterProductVariantAttributes" EntitySet="MasterProductVariantAttributes" />
+            <End Role="MasterProductVariantSubAttributes" EntitySet="MasterProductVariantSubAttributes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_MasterProductCategories" Association="Self.FK_Product_MasterProductCategories">
+            <End Role="MasterProductCategories" EntitySet="MasterProductCategories" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_MasterProductTypes" Association="Self.FK_Product_MasterProductTypes">
+            <End Role="MasterProductTypes" EntitySet="MasterProductTypes" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductCompositeAlloc_Product" Association="Self.FK_ProductCompositeAlloc_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductCompositeAlloc" EntitySet="ProductCompositeAlloc" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductCompositeLines_ProductCompositeAlloc" Association="Self.FK_ProductCompositeLines_ProductCompositeAlloc">
+            <End Role="ProductCompositeAlloc" EntitySet="ProductCompositeAlloc" />
+            <End Role="ProductCompositeLines" EntitySet="ProductCompositeLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductCompositeLines_ProductStandardAlloc" Association="Self.FK_ProductCompositeLines_ProductStandardAlloc">
+            <End Role="ProductStandardAlloc" EntitySet="ProductStandardAlloc" />
+            <End Role="ProductCompositeLines" EntitySet="ProductCompositeLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductStandardAlloc_Product" Association="Self.FK_ProductStandardAlloc_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductStandardAlloc" EntitySet="ProductStandardAlloc" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductVariantAlloc_MasterProductVariantSubAttributes" Association="Self.FK_ProductVariantAlloc_MasterProductVariantSubAttributes">
+            <End Role="MasterProductVariantSubAttributes" EntitySet="MasterProductVariantSubAttributes" />
+            <End Role="ProductVariantAlloc" EntitySet="ProductVariantAlloc" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductVariantAlloc_Product" Association="Self.FK_ProductVariantAlloc_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductVariantAlloc" EntitySet="ProductVariantAlloc" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="PMModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AppUser">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="userName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="userPwd" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="userLevel" Type="Byte" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="MasterProductCategory">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="catDesc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Product_MasterProductCategories" FromRole="MasterProductCategories" ToRole="Product" />
+        </EntityType>
+        <EntityType Name="MasterProductVariantAttribute">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="variantDesc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MasterProductVariantSubAttributes" Relationship="Self.FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes" FromRole="MasterProductVariantAttributes" ToRole="MasterProductVariantSubAttributes" />
+        </EntityType>
+        <EntityType Name="MasterProductVariantSubAttribute">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="attributeId" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="subVariantDesc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MasterProductVariantAttribute" Relationship="Self.FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes" FromRole="MasterProductVariantSubAttributes" ToRole="MasterProductVariantAttributes" />
+          <NavigationProperty Name="ProductVariantAllocs" Relationship="Self.FK_ProductVariantAlloc_MasterProductVariantSubAttributes" FromRole="MasterProductVariantSubAttributes" ToRole="ProductVariantAlloc" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="catId" Type="Int32" Nullable="false" />
+          <Property Name="typeId" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="skuCode" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="stockQtty" Type="Double" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MasterProductCategory" Relationship="Self.FK_Product_MasterProductCategories" FromRole="Product" ToRole="MasterProductCategories" />
+          <NavigationProperty Name="ProductCompositeAllocs" Relationship="Self.FK_ProductCompositeAlloc_Product" FromRole="Product" ToRole="ProductCompositeAlloc" />
+          <NavigationProperty Name="ProductVariantAllocs" Relationship="Self.FK_ProductVariantAlloc_Product" FromRole="Product" ToRole="ProductVariantAlloc" />
+          <NavigationProperty Name="ProductStandardAlloc" Relationship="PMModel.FK_ProductStandardAlloc_Product" FromRole="Product" ToRole="ProductStandardAlloc" />
+          <NavigationProperty Name="MasterProductType" Relationship="PMModel.FK_Product_MasterProductTypes" FromRole="Product" ToRole="MasterProductType" />
+        </EntityType>
+        <EntityType Name="ProductCompositeAlloc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="prodId" Type="Int32" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_ProductCompositeAlloc_Product" FromRole="ProductCompositeAlloc" ToRole="Product" />
+          <NavigationProperty Name="ProductCompositeLines" Relationship="Self.FK_ProductCompositeLines_ProductCompositeAlloc" FromRole="ProductCompositeAlloc" ToRole="ProductCompositeLines" />
+        </EntityType>
+        <EntityType Name="ProductCompositeLine">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="compId" Type="Int32" Nullable="false" />
+          <Property Name="prodStandId" Type="Int32" Nullable="false" />
+          <Property Name="isMandatory" Type="Boolean" Nullable="false" />
+          <Property Name="isPriceInclusive" Type="Boolean" Nullable="false" />
+          <Property Name="isParent" Type="Boolean" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ProductCompositeAlloc" Relationship="Self.FK_ProductCompositeLines_ProductCompositeAlloc" FromRole="ProductCompositeLines" ToRole="ProductCompositeAlloc" />
+          <NavigationProperty Name="ProductStandardAlloc" Relationship="PMModel.FK_ProductCompositeLines_ProductStandardAlloc" FromRole="ProductCompositeLine" ToRole="ProductStandardAlloc" />
+        </EntityType>
+        <EntityType Name="ProductVariantAlloc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="prodId" Type="Int32" Nullable="false" />
+          <Property Name="subAttrId" Type="Int32" Nullable="false" />
+          <Property Name="price" Type="Double" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MasterProductVariantSubAttribute" Relationship="Self.FK_ProductVariantAlloc_MasterProductVariantSubAttributes" FromRole="ProductVariantAlloc" ToRole="MasterProductVariantSubAttributes" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_ProductVariantAlloc_Product" FromRole="ProductVariantAlloc" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_Product_MasterProductCategories">
+          <End Role="MasterProductCategories" Type="Self.MasterProductCategory" Multiplicity="1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductCategories">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="catId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes">
+          <End Role="MasterProductVariantAttributes" Type="Self.MasterProductVariantAttribute" Multiplicity="1" />
+          <End Role="MasterProductVariantSubAttributes" Type="Self.MasterProductVariantSubAttribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductVariantAttributes">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MasterProductVariantSubAttributes">
+              <PropertyRef Name="attributeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductVariantAlloc_MasterProductVariantSubAttributes">
+          <End Role="MasterProductVariantSubAttributes" Type="Self.MasterProductVariantSubAttribute" Multiplicity="1" />
+          <End Role="ProductVariantAlloc" Type="Self.ProductVariantAlloc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductVariantSubAttributes">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductVariantAlloc">
+              <PropertyRef Name="subAttrId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductCompositeAlloc_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductCompositeAlloc" Type="Self.ProductCompositeAlloc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductCompositeAlloc">
+              <PropertyRef Name="prodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductVariantAlloc_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductVariantAlloc" Type="Self.ProductVariantAlloc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductVariantAlloc">
+              <PropertyRef Name="prodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductCompositeLines_ProductCompositeAlloc">
+          <End Role="ProductCompositeAlloc" Type="Self.ProductCompositeAlloc" Multiplicity="1" />
+          <End Role="ProductCompositeLines" Type="Self.ProductCompositeLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductCompositeAlloc">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductCompositeLines">
+              <PropertyRef Name="compId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PMEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AppUsers" EntityType="Self.AppUser" />
+          <EntitySet Name="MasterProductCategories" EntityType="Self.MasterProductCategory" />
+          <EntitySet Name="MasterProductVariantAttributes" EntityType="Self.MasterProductVariantAttribute" />
+          <EntitySet Name="MasterProductVariantSubAttributes" EntityType="Self.MasterProductVariantSubAttribute" />
+          <EntitySet Name="Products" EntityType="Self.Product" />
+          <EntitySet Name="ProductCompositeAllocs" EntityType="Self.ProductCompositeAlloc" />
+          <EntitySet Name="ProductCompositeLines" EntityType="Self.ProductCompositeLine" />
+          <EntitySet Name="ProductVariantAllocs" EntityType="Self.ProductVariantAlloc" />
+          <AssociationSet Name="FK_Product_MasterProductCategories" Association="Self.FK_Product_MasterProductCategories">
+            <End Role="MasterProductCategories" EntitySet="MasterProductCategories" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes" Association="Self.FK_MasterProductVariantSubAttributes_MasterProductVariantAttributes">
+            <End Role="MasterProductVariantAttributes" EntitySet="MasterProductVariantAttributes" />
+            <End Role="MasterProductVariantSubAttributes" EntitySet="MasterProductVariantSubAttributes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductVariantAlloc_MasterProductVariantSubAttributes" Association="Self.FK_ProductVariantAlloc_MasterProductVariantSubAttributes">
+            <End Role="MasterProductVariantSubAttributes" EntitySet="MasterProductVariantSubAttributes" />
+            <End Role="ProductVariantAlloc" EntitySet="ProductVariantAllocs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductCompositeAlloc_Product" Association="Self.FK_ProductCompositeAlloc_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="ProductCompositeAlloc" EntitySet="ProductCompositeAllocs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductVariantAlloc_Product" Association="Self.FK_ProductVariantAlloc_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="ProductVariantAlloc" EntitySet="ProductVariantAllocs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductCompositeLines_ProductCompositeAlloc" Association="Self.FK_ProductCompositeLines_ProductCompositeAlloc">
+            <End Role="ProductCompositeAlloc" EntitySet="ProductCompositeAllocs" />
+            <End Role="ProductCompositeLines" EntitySet="ProductCompositeLines" />
+          </AssociationSet>
+          <EntitySet Name="ProductStandardAllocs" EntityType="PMModel.ProductStandardAlloc" />
+          <AssociationSet Name="FK_ProductStandardAlloc_Product" Association="PMModel.FK_ProductStandardAlloc_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="ProductStandardAlloc" EntitySet="ProductStandardAllocs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductCompositeLines_ProductStandardAlloc" Association="PMModel.FK_ProductCompositeLines_ProductStandardAlloc">
+            <End Role="ProductStandardAlloc" EntitySet="ProductStandardAllocs" />
+            <End Role="ProductCompositeLine" EntitySet="ProductCompositeLines" />
+          </AssociationSet>
+          <EntitySet Name="MasterProductTypes" EntityType="PMModel.MasterProductType" />
+          <AssociationSet Name="FK_Product_MasterProductTypes" Association="PMModel.FK_Product_MasterProductTypes">
+            <End Role="MasterProductType" EntitySet="MasterProductTypes" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="ProductStandardAlloc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="prodId" Type="Int32" Nullable="false" />
+          <Property Name="price" Type="Double" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Product" Relationship="PMModel.FK_ProductStandardAlloc_Product" FromRole="ProductStandardAlloc" ToRole="Product" />
+          <NavigationProperty Name="ProductCompositeLines" Relationship="PMModel.FK_ProductCompositeLines_ProductStandardAlloc" FromRole="ProductStandardAlloc" ToRole="ProductCompositeLine" />
+        </EntityType>
+        <Association Name="FK_ProductStandardAlloc_Product">
+          <End Type="PMModel.Product" Role="Product" Multiplicity="1" />
+          <End Type="PMModel.ProductStandardAlloc" Role="ProductStandardAlloc" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductStandardAlloc">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductCompositeLines_ProductStandardAlloc">
+          <End Type="PMModel.ProductStandardAlloc" Role="ProductStandardAlloc" Multiplicity="1" />
+          <End Type="PMModel.ProductCompositeLine" Role="ProductCompositeLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductStandardAlloc">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductCompositeLine">
+              <PropertyRef Name="prodStandId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MasterProductType">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="systemTypeId" Type="Byte" Nullable="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="typeDesc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Products" Relationship="PMModel.FK_Product_MasterProductTypes" FromRole="MasterProductType" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_Product_MasterProductTypes">
+          <End Type="PMModel.MasterProductType" Role="MasterProductType" Multiplicity="1" />
+          <End Type="PMModel.Product" Role="Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterProductType">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="typeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="PMModelStoreContainer" CdmEntityContainer="PMEntities">
+          <EntitySetMapping Name="AppUsers">
+            <EntityTypeMapping TypeName="PMModel.AppUser">
+              <MappingFragment StoreEntitySet="AppUser">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="userName" ColumnName="userName" />
+                <ScalarProperty Name="userPwd" ColumnName="userPwd" />
+                <ScalarProperty Name="userLevel" ColumnName="userLevel" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MasterProductCategories">
+            <EntityTypeMapping TypeName="PMModel.MasterProductCategory">
+              <MappingFragment StoreEntitySet="MasterProductCategories">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="catDesc" ColumnName="catDesc" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MasterProductVariantAttributes">
+            <EntityTypeMapping TypeName="PMModel.MasterProductVariantAttribute">
+              <MappingFragment StoreEntitySet="MasterProductVariantAttributes">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="variantDesc" ColumnName="variantDesc" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MasterProductVariantSubAttributes">
+            <EntityTypeMapping TypeName="PMModel.MasterProductVariantSubAttribute">
+              <MappingFragment StoreEntitySet="MasterProductVariantSubAttributes">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="attributeId" ColumnName="attributeId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="subVariantDesc" ColumnName="subVariantDesc" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products">
+            <EntityTypeMapping TypeName="PMModel.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="catId" ColumnName="catId" />
+                <ScalarProperty Name="typeId" ColumnName="typeId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="skuCode" ColumnName="skuCode" />
+                <ScalarProperty Name="stockQtty" ColumnName="stockQtty" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductCompositeAllocs">
+            <EntityTypeMapping TypeName="PMModel.ProductCompositeAlloc">
+              <MappingFragment StoreEntitySet="ProductCompositeAlloc">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="prodId" ColumnName="prodId" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductCompositeLines">
+            <EntityTypeMapping TypeName="PMModel.ProductCompositeLine">
+              <MappingFragment StoreEntitySet="ProductCompositeLines">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="compId" ColumnName="compId" />
+                <ScalarProperty Name="prodStandId" ColumnName="prodStandId" />
+                <ScalarProperty Name="isMandatory" ColumnName="isMandatory" />
+                <ScalarProperty Name="isPriceInclusive" ColumnName="isPriceInclusive" />
+                <ScalarProperty Name="isParent" ColumnName="isParent" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductVariantAllocs">
+            <EntityTypeMapping TypeName="PMModel.ProductVariantAlloc">
+              <MappingFragment StoreEntitySet="ProductVariantAlloc">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="prodId" ColumnName="prodId" />
+                <ScalarProperty Name="subAttrId" ColumnName="subAttrId" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductStandardAllocs">
+            <EntityTypeMapping TypeName="PMModel.ProductStandardAlloc">
+              <MappingFragment StoreEntitySet="ProductStandardAlloc">
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="prodId" ColumnName="prodId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MasterProductTypes">
+            <EntityTypeMapping TypeName="PMModel.MasterProductType">
+              <MappingFragment StoreEntitySet="MasterProductTypes">
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+                <ScalarProperty Name="typeDesc" ColumnName="typeDesc" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="systemTypeId" ColumnName="systemTypeId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
