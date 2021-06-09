@@ -17,7 +17,7 @@ namespace ProductManagerAPI.Controllers
     {
 
         [HttpGet]
-        [Route("api/productCategories")]
+        [Route("productCategories")]
         public HttpResponseMessage GetCategories()
         {
             //Create HTTP Response.
@@ -47,7 +47,7 @@ namespace ProductManagerAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/productCategory")]
+        [Route("productCategory")]
         public HttpResponseMessage PostCategory([FromBody]JToken postData)
         {
             #region prepare api
@@ -147,7 +147,7 @@ namespace ProductManagerAPI.Controllers
 
 
         [HttpGet]
-        [Route("api/products")]
+        [Route("products")]
         public HttpResponseMessage GetProducts()
         {
             //Create HTTP Response.
@@ -177,7 +177,7 @@ namespace ProductManagerAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/<categoryId>")]
+        [Route("products/<categoryId>")]
         public HttpResponseMessage GetProducts(Int32 categoryId)
         {
             //Create HTTP Response.
@@ -207,7 +207,7 @@ namespace ProductManagerAPI.Controllers
         }
 
         [HttpPost]
-        [Route("api/products")]
+        [Route("products")]
         public HttpResponseMessage PostProducts([FromBody]JToken postData)
         {
             #region prepare api
@@ -424,7 +424,7 @@ namespace ProductManagerAPI.Controllers
         }
 
         [HttpPut]
-        [Route("api/products")]
+        [Route("products")]
         public HttpResponseMessage PutProducts([FromBody]JToken postData)
         {
             #region prepare api
@@ -642,7 +642,7 @@ namespace ProductManagerAPI.Controllers
 
 
         [HttpPost]
-        [Route("api/productAttributes")]
+        [Route("productAttributes")]
         public HttpResponseMessage PostProductAttributes([FromBody]JToken postData)
         {
             #region prepare api
@@ -738,7 +738,7 @@ namespace ProductManagerAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/productAttributes")]
+        [Route("productAttributes")]
         public HttpResponseMessage GetProductAttributes()
         {
             //Create HTTP Response.
@@ -768,7 +768,7 @@ namespace ProductManagerAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/productAttributeValues/<attributeId>")]
+        [Route("productAttributeValues/<attributeId>")]
         public HttpResponseMessage GetProductSubAttributes(Int32 attributeId)
         {
             //Create HTTP Response.
