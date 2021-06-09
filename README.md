@@ -11,3 +11,4 @@ Points to note:
 	
 2. The project database is included in the project in folder Database. It is an sql server database.
 3. Database Connection parameters should be passed in the web.config file in the API project.
+4. Host API in IIS server on port 1002
