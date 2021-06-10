@@ -268,26 +268,7 @@ namespace ProductManagerData
             }
             return modelList;
         }
-
-        public static List<KeyValuePair<SystemProductTypes, byte>> GetSystemTypeList()
-        {
-            try
-            {
-                List<KeyValuePair<SystemProductTypes, byte>> modelList = new List<KeyValuePair<SystemProductTypes, byte>>()
-            {
-                new KeyValuePair<SystemProductTypes, byte>(SystemProductTypes.STANDARD,(byte)SystemProductTypes.STANDARD),
-                                new KeyValuePair<SystemProductTypes, byte>(SystemProductTypes.VARIANT,(byte)SystemProductTypes.VARIANT),
-                                                new KeyValuePair<SystemProductTypes, byte>(SystemProductTypes.COMPOSITE,(byte)SystemProductTypes.COMPOSITE),
-            };
-                return modelList;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Log(LogLevel.WARNING, ex.Message);
-            }
-            return null;
-        }
-
+         
         public static MasterProductTypeDTO ConvertType(MasterProductType model)
         {
             MasterProductTypeDTO modelDTO = null;

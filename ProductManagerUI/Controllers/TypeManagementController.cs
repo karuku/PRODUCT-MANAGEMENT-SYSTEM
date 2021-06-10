@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProductManagerUI.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +12,7 @@ namespace ProductManagerUI.Controllers
         // GET: TypeManagement
         public ActionResult Index()
         {
+            ViewBag.SystemTypes = SystemHelper.GetSystemTypeList();
             return View();
         }
 

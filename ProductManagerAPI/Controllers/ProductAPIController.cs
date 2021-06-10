@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ProductManagerAPI.Helpers;
 using ProductManagerAPI.Models;
 using ProductManagerData;
 using ProductManagerData.DTO;
@@ -8,41 +9,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Web;
 using System.Web.Http;
 
 namespace ProductManagerAPI.Controllers
 {
     public class ProductAPIController : ApiController
     {
+        private string json = "";
+        private string responseMessage = "";
 
         [HttpGet]
         [Route("productCategories")]
         public HttpResponseMessage GetCategories()
-        {
-            //Create HTTP Response.
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+        { 
+                //Create HTTP Response.
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+            try
+            { 
+                var modelList = Repository.GetCategoryList();
 
-            var modelList = Repository.GetCategoryList();
+                //Check whether list is empty
+                if (modelList == null || modelList.Count == 0)
+                {
+                    //Throw 204 (No Content) exception
+                    response.StatusCode = HttpStatusCode.NoContent;
+                    response.ReasonPhrase = string.Format("No data found");
+                    throw new HttpResponseException(response);
+                }
 
-            //Check whether list is empty
-            if (modelList == null)
-            {
-                //Throw 204 (No Content) exception
-                response.StatusCode = HttpStatusCode.NoContent;
-                response.ReasonPhrase = string.Format("No data found");
-                throw new HttpResponseException(response);
+                responseMessage = "Found";
+
+                var obj = new { categoryList = modelList };
+
+                json = ApiVariables.ResponseJson(0, responseMessage, obj);
+
+                response = Request.CreateResponse(HttpStatusCode.OK);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
             }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
 
-            var responseMessage = "Found";
-
-            var obj = new { categoryList = modelList };
-
-            var json = ApiVariables.ResponseJson(0, responseMessage, obj);
-
-            response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
             return response;
         }
 
@@ -71,7 +85,7 @@ namespace ProductManagerAPI.Controllers
             try
             {
                 var res = false;
-
+                 
                 #region get object
                 var requestObjModel = JsonConvert.DeserializeObject<CategoryModel>(postData.ToString());
                 var requestObj = requestObjModel.ProductCategory;
@@ -145,6 +159,145 @@ namespace ProductManagerAPI.Controllers
             return response;
         }
 
+        [HttpGet]
+        [Route("productTypes")]
+        public HttpResponseMessage GetTypes()
+        {
+            //Create HTTP Response.
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+
+            try {
+                 
+                var modelList = Repository.GetTypeList();
+
+            //Check whether list is empty
+            if (modelList == null || modelList.Count==0)
+            {
+                //Throw 204 (No Content) exception
+                response.StatusCode = HttpStatusCode.NoContent;
+                response.ReasonPhrase = string.Format("No data found");
+                throw new HttpResponseException(response);
+            }
+
+            responseMessage = "Found";
+
+            var obj = new { typeList = modelList };
+
+            json = ApiVariables.ResponseJson(0, responseMessage, obj);
+
+            response = Request.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
+
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            return response;
+        }
+
+        [HttpPost]
+        [Route("productType")]
+        public HttpResponseMessage PostType([FromBody]JToken postData)
+        {
+            #region prepare api
+
+            HttpResponseMessage response = null;
+            string responseMessage = "";
+            string json = "";
+            if (postData == null)
+            {
+                responseMessage = "request data cannot be empty";
+                json = ApiVariables.ResponseJson(1, responseMessage);
+
+                response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                return response;
+            }
+
+            #endregion
+
+            try
+            {
+                var res = false;
+                 
+                #region get object
+                var requestObjModel = JsonConvert.DeserializeObject<TypeModel>(postData.ToString());
+                var requestObj = requestObjModel.ProductType;
+
+                if (requestObj == null)
+                {
+                    responseMessage = OutputModel.GetEmpty("input data");
+                    json = ApiVariables.ResponseJson(1, responseMessage);
+
+                    response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                    response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    return response;
+                }
+                if (string.IsNullOrWhiteSpace(requestObj.name))
+                {
+                    responseMessage = OutputModel.GetEmpty("Name");
+                    json = ApiVariables.ResponseJson(1, responseMessage);
+
+                    response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                    response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    return response;
+                }
+                #endregion
+
+                #region send object to db
+                var model = new MasterProductTypeDTO
+                {
+                    id = requestObj.id,
+                    name = requestObj.name,
+                    typeDesc = requestObj.typeDesc,
+                    createdAt = DateTime.Now
+                };
+
+                res = Repository.AddType(model);
+
+                if (res)
+                {
+                    responseMessage = OutputModel.GetAddSuccess("Type");
+
+                    json = ApiVariables.ResponseJson(0, responseMessage);
+
+                    response = Request.CreateResponse(HttpStatusCode.OK);
+                    response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    return response;
+                }
+                else
+                {
+                    responseMessage = OutputModel.GetAddError("Type");
+                    json = ApiVariables.ResponseJson(1, responseMessage);
+
+                    response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                    response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    return response;
+                }
+                #endregion
+
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
+
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            // Info.  
+            return response;
+        }
+
 
         [HttpGet]
         [Route("products")]
@@ -153,10 +306,12 @@ namespace ProductManagerAPI.Controllers
             //Create HTTP Response.
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
 
-            var modelList = Repository.GetProductDetailList();
+            try {
+                 
+                var modelList = Repository.GetProductDetailList();
 
             //Check whether list is empty
-            if (modelList == null)
+            if (modelList == null || modelList.Count==0)
             {
                 //Throw 204 (No Content) exception
                 response.StatusCode = HttpStatusCode.NoContent;
@@ -164,15 +319,23 @@ namespace ProductManagerAPI.Controllers
                 throw new HttpResponseException(response);
             }
 
-            var responseMessage = "Found";
+            responseMessage = "Found";
 
             var obj = new { ProductList = modelList };
 
-            var json = ApiVariables.ResponseJson(0, responseMessage, obj);
+            json = ApiVariables.ResponseJson(0, responseMessage, obj);
 
             response = Request.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
 
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
             return response;
         }
 
@@ -182,11 +345,12 @@ namespace ProductManagerAPI.Controllers
         {
             //Create HTTP Response.
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-
-            var modelList = Repository.GetProductList().Where(c => c.catId == categoryId).ToList();
+            try {
+                 
+                var modelList = Repository.GetProductList().Where(c => c.catId == categoryId).ToList();
 
             //Check whether list is empty
-            if (modelList == null)
+            if (modelList == null || modelList.Count==0)
             {
                 //Throw 204 (No Content) exception
                 response.StatusCode = HttpStatusCode.NoContent;
@@ -194,15 +358,23 @@ namespace ProductManagerAPI.Controllers
                 throw new HttpResponseException(response);
             }
 
-            var responseMessage = "Found";
+            responseMessage = "Found";
 
             var obj = new { ProductList = modelList };
 
-            var json = ApiVariables.ResponseJson(0, responseMessage, obj);
+            json = ApiVariables.ResponseJson(0, responseMessage, obj);
 
             response = Request.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
 
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
             return response;
         }
 
@@ -233,7 +405,7 @@ namespace ProductManagerAPI.Controllers
             try
             {
                 var res = false;
-
+                 
                 #region get object and validate
                 var requestObj = JsonConvert.DeserializeObject<ProductModel>(postData.ToString());
 
@@ -450,7 +622,7 @@ namespace ProductManagerAPI.Controllers
             try
             {
                 var res = false;
-
+                 
                 #region get object and validate
                 var requestObj = JsonConvert.DeserializeObject<ProductModel>(postData.ToString());
 
@@ -668,7 +840,7 @@ namespace ProductManagerAPI.Controllers
             try
             {
                 var res = false;
-
+                 
                 #region get object and validate
                 var requestObj = JsonConvert.DeserializeObject<ProductAttributesViewModel>(postData.ToString());
 
@@ -743,11 +915,12 @@ namespace ProductManagerAPI.Controllers
         {
             //Create HTTP Response.
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-
-            var modelList = Repository.GetAttributeList();
+            try {
+                 
+                var modelList = Repository.GetAttributeList();
 
             //Check whether list is empty
-            if (modelList == null)
+            if (modelList == null || modelList.Count==0)
             {
                 //Throw 204 (No Content) exception
                 response.StatusCode = HttpStatusCode.NoContent;
@@ -755,15 +928,23 @@ namespace ProductManagerAPI.Controllers
                 throw new HttpResponseException(response);
             }
 
-            var responseMessage = "Found";
+            responseMessage = "Found";
 
             var obj = new { AttributeList = modelList };
 
-            var json = ApiVariables.ResponseJson(0, responseMessage, obj);
+            json = ApiVariables.ResponseJson(0, responseMessage, obj);
 
             response = Request.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
 
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
             return response;
         }
 
@@ -773,11 +954,12 @@ namespace ProductManagerAPI.Controllers
         {
             //Create HTTP Response.
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-
-            var modelList = Repository.GetSubAttributeList().Where(c => c.attributeId == attributeId);
+            try {
+                 
+                var modelList = Repository.GetSubAttributeList().Where(c => c.attributeId == attributeId).ToList();
 
             //Check whether list is empty
-            if (modelList == null)
+            if (modelList == null || modelList.Count==0)
             {
                 //Throw 204 (No Content) exception
                 response.StatusCode = HttpStatusCode.NoContent;
@@ -785,15 +967,23 @@ namespace ProductManagerAPI.Controllers
                 throw new HttpResponseException(response);
             }
 
-            var responseMessage = "Found";
+            responseMessage = "Found";
 
             var obj = new { AttributeValueList = modelList };
 
-            var json = ApiVariables.ResponseJson(0, responseMessage, obj);
+            json = ApiVariables.ResponseJson(0, responseMessage, obj);
 
             response = Request.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+                json = ApiVariables.ResponseJson(1, responseMessage);
 
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
             return response;
         }
 

@@ -32,8 +32,9 @@
     <link href="~/Content/Layout/css/widgets.css" rel="stylesheet">
     <link href="~/Content/Layout/css/style.css" rel="stylesheet">
     <link href="~/Content/Layout/css/style-responsive.css" rel="stylesheet" />
-    <link href="~/Content/Layout/css/xcharts.min.css" rel=" stylesheet">
+    <link href="~/Content/Layout/css/xcharts.min.css" rel="stylesheet">
     <link href="~/Content/Layout/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+    <link href="~/Content/Plugins/toastr/build/toastr.min.css" rel="stylesheet">
  @RenderSection("Styles", required: false)
 </head>
 
@@ -157,9 +158,9 @@
     </section>
     <!-- container section start -->
     <!-- javascripts -->
-    <script src="~/Content/Layout/js/jquery.js"></script>
+    <script src="~/Content/Layout/js/jquery/3.3.1/jquery.min.js"></script>
     <script src="~/Content/Layout/js/jquery-ui-1.10.4.min.js"></script>
-    <script src="~/Content/Layout/js/jquery-1.8.3.min.js"></script>
+    @*<script src="~/Content/Layout/js/jquery-1.8.3.min.js"></script>*@
     <script type="text/javascript" src="~/Content/Layout/js/jquery-ui-1.9.2.custom.min.js"></script>
     <!-- bootstrap -->
     <script src="~/Content/Layout/js/bootstrap.min.js"></script>
@@ -198,6 +199,7 @@
     <script src="~/Content/Layout/js/sparklines.js"></script>
     <script src="~/Content/Layout/js/charts.js"></script>
     <script src="~/Content/Layout/js/jquery.slimscroll.min.js"></script>
+    <script src="~/Content/Plugins/toastr/build/toastr.min.js"></script>
     <script>
       //knob
       $(function() {

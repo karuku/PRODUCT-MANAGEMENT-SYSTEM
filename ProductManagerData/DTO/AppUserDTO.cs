@@ -26,6 +26,12 @@ namespace ProductManagerData.DTO
         public System.DateTime createdAt { get; set; } 
     }
 
+
+    public enum SystemProductTypes : byte
+    {
+        STANDARD = 1, VARIANT, COMPOSITE
+    }
+
     [Serializable]
     public class MasterProductTypeDTO
     {
@@ -140,8 +146,4 @@ namespace ProductManagerData.DTO
         public virtual ProductDTO Product { get; set; }
     }
 
-    public enum SystemProductTypes:byte
-    {
-        STANDARD=1,VARIANT,COMPOSITE
-    }
 }

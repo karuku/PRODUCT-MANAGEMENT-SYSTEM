@@ -1,6 +1,9 @@
-﻿using System;
+﻿using RestSharp;
+using RestSharp.Authenticators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 //using ProductManagerData.DTO;
@@ -11,7 +14,7 @@ namespace ProductManagerUI.Controllers
     {
         // GET: CategoryManagement
         public ActionResult Index()
-        {
+        { 
             return View();
         }
 
@@ -20,5 +23,6 @@ namespace ProductManagerUI.Controllers
         {
             return View();
         }
+    
     }
 }

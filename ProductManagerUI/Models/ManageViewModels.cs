@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using System;
 
 namespace ProductManagerUI.Models
 {
@@ -82,5 +83,32 @@ namespace ProductManagerUI.Models
     {
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
+    }
+
+
+    public enum SystemProductTypes : byte
+    {
+        STANDARD = 1, VARIANT, COMPOSITE
+    }
+    public class SystemHelper
+    {
+        public static List<KeyValuePair<SystemProductTypes, byte>> GetSystemTypeList()
+        {
+            try
+            {
+                List<KeyValuePair<SystemProductTypes, byte>> modelList = new List<KeyValuePair<SystemProductTypes, byte>>()
+            {
+                new KeyValuePair<SystemProductTypes, byte>(SystemProductTypes.STANDARD,(byte)SystemProductTypes.STANDARD),
+                                new KeyValuePair<SystemProductTypes, byte>(SystemProductTypes.VARIANT,(byte)SystemProductTypes.VARIANT),
+                                                new KeyValuePair<SystemProductTypes, byte>(SystemProductTypes.COMPOSITE,(byte)SystemProductTypes.COMPOSITE),
+            };
+                return modelList;
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return null;
+        }
     }
 }

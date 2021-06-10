@@ -1,6 +1,8 @@
 ﻿
 @{
     Layout = "~/Views/Shared/_LayoutMain.cshtml";
+
+    var types = ViewBag.SystemTypes as List<System.Collections.Generic.KeyValuePair<ProductManagerUI.Models.SystemProductTypes, byte>>;
 }
 
 <div class="row">
@@ -22,15 +24,27 @@
             <div class="panel-body">
                 <form role="form">
                     <div class="form-group">
+                        <label for="exampleInputEmail1">System Type</label>
+                        <select class="form-control" id="systemTypeId" name="systemTypeId">
+                            @if(types!=null && types.Count > 0)
+                            {
+                                foreach(var type in types)
+                                {
+                                    <option value="@type.Value">@type.Key</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="exampleInputEmail1">Name</label>
                         <input type="text" class="form-control" id="name" placeholder="Enter Name">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Description</label>
-                        <textarea class="form-control" id="catDesc" placeholder="Enter Description"></textarea>
+                        <textarea class="form-control" id="typeDesc" placeholder="Enter Description"></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary">Submit</button>
                 </form>
 
             </div>
@@ -47,27 +61,114 @@
                 <thead>
                     <tr>
                         <th><i class="icon_profile"></i> Name</th>
-                        <th><i class="icon_mail_alt"></i> Desc</th>
-                        <th><i class="icon_calendar"></i> Date</th>
+                        <th><i class="icon_mail_alt"></i> Desc</th> 
                         <th><i class="icon_cogs"></i> Action</th>
                     </tr>
                 </thead>
-                <tbody>
-
-                    <tr>
-                        <td>Name</td>
-                        <td>Desc</td>
-                        <td>date</td>
-                        <td>
-                            <div class="btn-group">
-                                <a class="btn btn-success" href="#"><i class="icon_pencil-edit_alt"></i></a>
-                                <a class="btn btn-danger" href="#"><i class="icon_close_alt2"></i></a>
-                            </div>
-                        </td>
-                    </tr>
+                <tbody id="tData">
 
                 </tbody>
             </table>
         </section>
     </div>
 </div>
+
+
+@section Scripts{
+    <script src="~/Content/PageJS/PageJS.js"></script>
+    <script type="text/javascript">
+
+        function GetTableData(url) {
+
+            $.get(url, null, function (data) {
+
+                var responseObj = data;
+                var tData = $('#tData');
+                tData.empty();
+                ValidateTableData(tData, responseObj);
+
+            }, "json").always(function () {
+
+            }).fail(function () {
+                toastr.error("Error Getting Table Data", 'Error!');
+            }, "json");
+        }
+
+        function ValidateTableData(tData, dataObj) {
+
+            var content = '';
+            var rCode = dataObj.rCode;
+
+            if (rCode == 0) {
+
+                var datas = dataObj.rObj.typeList;
+                if (datas != null && datas.length>0) {
+
+                    FillTableData(tData, datas);
+                }
+                else {
+                    FillEmptyTableData(tData);
+                }
+            } else {
+                FillEmptyTableData(tData);
+            }
+        }
+
+        function FillTableData(tData, dataObj) {
+
+            var content = '';
+
+            var datas = dataObj;
+
+            for (var i = 0; i < datas.length; i++) {
+                var data = datas[i];
+                content = content + '<tr class="data" id="data' + i + '">';
+
+                content = content + '<td>' + data.name + '</td>';
+                content = content + '<td>' + data.typeDesc + '</td>';
+                content = content + '<td>' +
+                    ' <div class="btn-group">' +
+                                '<a class="btn btn-success" href="#"><i class="icon_pencil-edit_alt"></i></a>' +
+                                '<a class="btn btn-danger" href="#"><i class="icon_close_alt2"></i></a>' +
+                            '</div>' +
+                    '</td>';
+
+                content = content + '</tr>';
+            }
+
+            tData.append(content);
+        }
+
+        function FillEmptyTableData(tData) {
+
+            var content = '';
+            content = content + '<tr>';
+
+            content = content + ' <td colspan="3">No Data</td> ';
+
+            content = content + '</tr>';
+
+            tData.append(content);
+        }
+
+        $(document).ready(function () {
+
+            var url = 'http://localhost:1002/productTypes';
+            GetTableData(url);
+
+            $('#btnSubmit').on('click', function () {
+                var e = $(this);
+                systemTypeId
+                var urlPost = 'http://localhost:1002/productType';
+                var systemTypeId = $('#systemTypeId').val();
+                var name = $('#name').val();
+                var typeDesc = $('#typeDesc').val();
+                var model = new Object();
+                model.ProductType = new Object();
+                model.ProductType = { systemTypeId, name, catDesc };
+                PostData(urlPost, model);
+                GetTableData(url);
+            });
+        });
+    </script>
+}
