@@ -3,6 +3,8 @@
     Layout = "~/Views/Shared/_LayoutMain.cshtml";
 
     var types = ViewBag.SystemTypes as List<System.Collections.Generic.KeyValuePair<ProductManagerUI.Models.SystemProductTypes, byte>>;
+    var dateTimeToJs = DateTime.Now;
+    //dateTimeToJs.toj
 }
 
 <div class="row">
@@ -62,6 +64,7 @@
                     <tr>
                         <th><i class="icon_profile"></i> Name</th>
                         <th><i class="icon_mail_alt"></i> Desc</th> 
+                        @*<th><i class="icon_mail_alt"></i> Date</th>*@ 
                         <th><i class="icon_cogs"></i> Action</th>
                     </tr>
                 </thead>
@@ -80,37 +83,42 @@
 
         function GetTableData(url) {
 
-            $.get(url, null, function (data) {
+            var tData = $('#tData');
 
+            FillEmptyTableData(tData, true);
+
+            var reqObj = GetData(url, null);
+
+            reqObj.then(function (data) {
                 var responseObj = data;
-                var tData = $('#tData');
-                tData.empty();
+
                 ValidateTableData(tData, responseObj);
+            });
 
-            }, "json").always(function () {
-
-            }).fail(function () {
-                toastr.error("Error Getting Table Data", 'Error!');
-            }, "json");
         }
 
         function ValidateTableData(tData, dataObj) {
 
             var content = '';
             var rCode = dataObj.rCode;
+            var rObj = dataObj.rObj;
 
             if (rCode == 0) {
 
-                var datas = dataObj.rObj.typeList;
-                if (datas != null && datas.length>0) {
+                var datas = rObj.DataList;
+
+                console.log(datas);
+                console.log(rObj);
+
+                if (datas != null && datas.length > 0) {
 
                     FillTableData(tData, datas);
                 }
                 else {
-                    FillEmptyTableData(tData);
+                    FillEmptyTableData(tData, false);
                 }
             } else {
-                FillEmptyTableData(tData);
+                FillEmptyTableData(tData, false);
             }
         }
 
@@ -120,12 +128,24 @@
 
             var datas = dataObj;
 
+
+            tData.empty();
+
             for (var i = 0; i < datas.length; i++) {
                 var data = datas[i];
+                var name = data.typeName;
+                var date = data.createDate;
+                 
+                var desc = data.typeDescription;
+                if (desc == null) {
+                    desc = '';
+                }
+
                 content = content + '<tr class="data" id="data' + i + '">';
 
-                content = content + '<td>' + data.name + '</td>';
-                content = content + '<td>' + data.typeDesc + '</td>';
+                content = content + '<td>' + name + '</td>';
+                content = content + '<td>' + desc + '</td>';
+                //content = content + '<td>' + date + '</td>';
                 content = content + '<td>' +
                     ' <div class="btn-group">' +
                                 '<a class="btn btn-success" href="#"><i class="icon_pencil-edit_alt"></i></a>' +
@@ -139,13 +159,18 @@
             tData.append(content);
         }
 
-        function FillEmptyTableData(tData) {
+        function FillEmptyTableData(tData, isLoading) {
+
+            tData.empty();
 
             var content = '';
             content = content + '<tr>';
 
-            content = content + ' <td colspan="3">No Data</td> ';
-
+            if (isLoading == true) {
+                content = content + ' <td colspan="3">Loading Data...</td> ';
+            } else {
+                content = content + ' <td colspan="3">No Data</td> ';
+            }
             content = content + '</tr>';
 
             tData.append(content);
@@ -153,21 +178,29 @@
 
         $(document).ready(function () {
 
-            var url = 'http://localhost:1002/productTypes';
+            var url = 'GetAll';
+            //var url = 'types/all';
             GetTableData(url);
 
             $('#btnSubmit').on('click', function () {
                 var e = $(this);
-                systemTypeId
-                var urlPost = 'http://localhost:1002/productType';
+               
+                var urlPost = 'PostOne';
+                //var urlPost = 'types/edit';
                 var systemTypeId = $('#systemTypeId').val();
-                var name = $('#name').val();
-                var typeDesc = $('#typeDesc').val();
-                var model = new Object();
-                model.ProductType = new Object();
-                model.ProductType = { systemTypeId, name, catDesc };
-                PostData(urlPost, model);
-                GetTableData(url);
+                var typeName = $('#name').val();
+                var typeDescription = $('#typeDesc').val(); 
+                var model = new Object(); 
+                model = { systemTypeId, typeName, typeDescription };
+                var reqObj = PostData(urlPost, model);
+                reqObj.then(function (response) {
+                    if (response.rCode == 0) {
+                        GetTableData(url);
+                    }
+                    //else {
+                    //    toastr.error(response.Message, 'Error!');
+                    //}
+                })
             });
         });
     </script>

@@ -230,14 +230,14 @@
 
                 model.ProductVariantSubAttributes = subList;
 
-                console.log(model);
+                console.log(JSON.stringify(model));
+                var strObj = JSON.stringify(model);
+                var entity = "productAttributes";
+                var data = strObj;
 
-                //var entity = "productAttributes";
-                //var data = model;
-
-                //var postModel = { entity, data };
-                //PostAPIData(urlPost, postModel);
-                //GetTableData(url);
+                var postModel = { entity, data };
+                PostAPIData(urlPost, postModel);
+                GetTableData(url);
             });
 
         });

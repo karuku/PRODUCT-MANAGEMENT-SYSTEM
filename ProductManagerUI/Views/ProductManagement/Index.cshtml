@@ -37,7 +37,7 @@
                         <th><i class="icon_cogs"></i> Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tData">
 
                     <tr>
                         <td>Category</td>
@@ -60,3 +60,129 @@
     </div>
 
 </div>
+
+
+@section Scripts{
+    <script src="~/Content/PageJS/PageJS.js"></script>
+    <script type="text/javascript">
+
+        function GetTableData(url) {
+
+            var tData = $('#tData');
+
+            FillEmptyTableData(tData, true);
+
+            var reqObj = GetData(url, null);
+
+            reqObj.then(function (data) {
+                var responseObj = data;
+
+                ValidateTableData(tData, responseObj);
+            });
+
+        }
+
+        function ValidateTableData(tData, dataObj) {
+
+            var content = '';
+            var rCode = dataObj.rCode;
+            var rObj = dataObj.rObj;
+
+            if (rCode == 0) {
+
+                var datas = rObj.DataList;
+
+                console.log(datas);
+                console.log(rObj);
+
+                if (datas != null && datas.length>0) {
+
+                    FillTableData(tData, datas);
+                }
+                else {
+                    FillEmptyTableData(tData, false);
+                }
+            } else {
+                FillEmptyTableData(tData, false);
+            }
+        }
+
+        function FillTableData(tData, dataObj) {
+
+            var content = '';
+
+            var datas = dataObj;
+
+
+            tData.empty();
+
+            for (var i = 0; i < datas.length; i++) {
+                var data = datas[i];
+                var name = data.catName;
+                var desc = data.catDescription;
+                if (desc == null) {
+                    desc = '';
+                }
+                content = content + '<tr class="data" id="data' + i + '">';
+
+                content = content + '<td>' + name + '</td>';
+                content = content + '<td>' + desc + '</td>';
+                content = content + '<td>' +
+                    ' <div class="btn-group">' +
+                                '<a class="btn btn-success" href="#"><i class="icon_pencil-edit_alt"></i></a>' +
+                                '<a class="btn btn-danger" href="#"><i class="icon_close_alt2"></i></a>' +
+                            '</div>' +
+                    '</td>';
+
+                content = content + '</tr>';
+            }
+
+            tData.append(content);
+        }
+
+        function FillEmptyTableData(tData,isLoading) {
+
+            tData.empty();
+
+            var content = '';
+            content = content + '<tr>';
+
+            if (isLoading == true) {
+                content = content + ' <td colspan="7">Loading Data...</td> ';
+            } else {
+                content = content + ' <td colspan="7">No Data</td> ';
+            }
+            content = content + '</tr>';
+
+            tData.append(content);
+        }
+
+        $(document).ready(function () {
+
+            var url = 'GetAll';
+            //var url = 'categories/all';
+            GetTableData(url);
+
+            $('#btnSubmit').on('click', function () {
+                var e = $(this);
+
+                var urlPost = 'PostOne';
+                //var urlPost = 'categories/edit';
+                var catName = $('#name').val();
+                var catDescription = $('#catDesc').val();
+                var model = new Object();
+                model = { catName, catDescription };
+                var reqObj = PostData(urlPost, model);
+                reqObj.then(function (response) {
+                    if (response.rCode == 0) {
+                        GetTableData(url);
+                    }
+                    //else {
+                    //    toastr.error(response.Message, 'Error!');
+                    //}
+                })
+
+            });
+        });
+    </script>
+}

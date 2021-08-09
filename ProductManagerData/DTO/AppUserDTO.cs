@@ -34,7 +34,7 @@ namespace ProductManagerData.DTO
 
     [Serializable]
     public class MasterProductTypeDTO
-    {
+    { 
         public int id { get; set; }
         public byte systemTypeId { get; set; }
         public SystemProductTypes systemType { get { return (SystemProductTypes)systemTypeId; } }

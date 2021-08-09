@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace ProductManagerUI.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : MainController
     {
         public ActionResult Index()
         {
